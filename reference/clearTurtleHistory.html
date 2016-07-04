@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>Turtle: clearTurtleHistory ()</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link href="../stylesheet.css" rel="stylesheet" type="text/css">
+</head>
+<body> 
+<center>
+<table border="0" cellpadding="0" cellspacing="0" width="600">
+  <tbody><tr>
+    <td class="header" height="100" valign="top"><span class="libName">clearTurtleHistory</span><br>
+        <a href="../index.html">index</a></td>
+    <td class="descList" width="450">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="mainTextName" valign="top">Name</td>
+    <td class="methodName">clearTurtleHistory ()</td>
+  </tr>
+  <tr>
+    <td class="mainText" valign="top">Description</td>
+    <td class="descList" valign="top" width="400">Deletes the history of the Turtle's movement. The next time <code>draw()</code> is called, all drawing that occured before <code>clearTurtleHistory()</code> is deleted. <br><br>
+
+      The turtle maintains its current position and orientation. Only the path history is deleted.</td>
+  </tr>
+  <tr>
+    <td class="mainText" valign="top">Syntax</td>
+    <td class="descList" valign="top"><code>clearTurtleHistory ();</code></td>
+  </tr>
+  
+     <tr>
+       <td class="mainText">Parameters</td>
+       <td class="descList" valign="top">
+         <table border="0" cellpadding="0" cellspacing="0">
+           
+      <tbody><tr>
+        <td valign="top" width="70">None</td>
+        <td width="20">&nbsp;</td>
+        <td valign="top"></td>
+	  </tr>
+    
+         </tbody></table>
+	   </td>
+	 </tr>
+   
+  
+     <tr>
+       <td class="mainText" valign="top">Returns</td>
+       <td class="descList">None</td>
+     </tr>
+   
+  <tr>
+    <td class="mainText" valign="top">Example</td>
+    <td class="descList" valign="top"><pre><code>
+      /* Draws a line at a random angle between 30 and 90 degrees. 
+       * Clears drawing history and draws a new line each time a 
+       * key is pressed. */
+
+      import Turtle.*;
+      Turtle t;
+
+      void setup() {
+        size(500,500);
+        background(0);
+        stroke(255);
+        noLoop();
+        t = new Turtle(this);
+      }
+
+      void draw () {
+        background(0);
+        t.right(random(30,90));
+        t.forward(100);
+        t.drawTurtle();
+      }
+
+
+      void keyPressed() {
+          t.clearTurtleHistory();
+          redraw();
+      }
+
+</code></pre></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="descList">&nbsp;</td>
+  </tr>
+</tbody></table>
+</center>
+</body></html>

@@ -8,7 +8,7 @@ name = Turtle
 authors = [Leah Buechley](http://leahbuechley.com)
 
 # A web page for your Library, NOT a direct link to where to download it.
-url = http://leahbuechley.com
+url = http://leahbuechley.com/Turtle
 
 # The category (or categories) of your Library, must be from the following list:
 #   "3D"            "Animation"     "Compilations"      "Data"          

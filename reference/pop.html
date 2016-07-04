@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>Turtle: pop ()</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link href="../stylesheet.css" rel="stylesheet" type="text/css">
+</head>
+<body> 
+<center>
+<table border="0" cellpadding="0" cellspacing="0" width="600">
+  <tbody><tr>
+    <td class="header" height="100" valign="top"><span class="libName">pop</span><br>
+        <a href="../index.html">index</a></td>
+    <td class="descList" width="450">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="mainTextName" valign="top">Name</td>
+    <td class="methodName">pop ()</td>
+  </tr>
+  <tr>
+    <td class="mainText" valign="top">Description</td>
+    <td class="descList" valign="top">Must be used after a push () statement. Returns turtle to the last pushed state. Removes last
+      pushed state from the stack. No line is drawn in the jump.</td>
+  </tr>
+  <tr>
+    <td class="mainText" valign="top">Syntax</td>
+    <td class="descList" valign="top"><code>pop();</code></td>
+  </tr>
+  
+     <tr>
+       <td class="mainText">Parameters</td>
+       <td class="descList" valign="top">
+         <table border="0" cellpadding="0" cellspacing="0">
+           
+      <tbody><tr>
+        <td valign="top" width="70">None</td>
+        <td width="20">&nbsp;</td>
+        <td valign="top"></td>
+	  </tr>
+    
+         </tbody></table>
+	   </td>
+	 </tr>
+   
+  
+     <tr>
+       <td class="mainText" valign="top">Returns</td>
+       <td class="descList">None</td>
+     </tr>
+
+         <tr>
+       <td class="mainText" valign="top">Related</td>
+       <td class="descList"><a href="push.html">push()</a></td>
+     </tr>
+   
+  <tr>
+    <td class="mainText" valign="top">Example</td>
+    <td class="descList" valign="top"><pre><code>
+    import Turtle.*;
+    size(500,500);
+    background(255);
+    stroke(0);
+
+    Turtle t = new Turtle(this);
+
+    t.push();       //save the current state
+    t.right(45);
+    t.forward(50);
+    t.left(30);
+    t.forward(50);
+    t.pop();        //return to the previously saved state
+    t.forward(100);
+
+</code></pre></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="descList">&nbsp;</td>
+  </tr>
+</tbody></table>
+</center>
+</body></html>
