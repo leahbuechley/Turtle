@@ -44,7 +44,6 @@ public class Turtle {
 		pushFlag = false;
 		pushHistory = new Turtle[0];
 		wrapAround = false;
-		this.right(180);
 		theParent.registerMethod("draw", this);
 	}
 
@@ -79,8 +78,13 @@ public class Turtle {
 			forwardWrapAround(distance);
 		else {
 			currentX = currentX + (float) (Math.sin(Math.toRadians(currentTheta)) * distance);
-			currentY = currentY + (float) (Math.cos(Math.toRadians(currentTheta)) * distance);
+			currentY = currentY - (float) (Math.cos(Math.toRadians(currentTheta)) * distance);
 			this.addHistoryLine();
+			int i = commandHistory.length-1;
+			if (commandHistory[i].state == penStates.PENDOWN | commandHistory[i].state == penStates.PENFAT)
+			{
+				myParent.line(commandHistory[i].p0.x, commandHistory[i].p0.y, commandHistory[i].p1.x, commandHistory[i].p1.y);
+			}
 		}
 	}
 
@@ -95,8 +99,13 @@ public class Turtle {
 			forwardWrapAround(-distance);
 		else {
 			currentX = currentX - (float) (Math.sin(Math.toRadians(currentTheta)) * distance);
-			currentY = currentY - (float) (Math.cos(Math.toRadians(currentTheta)) * distance);
+			currentY = currentY + (float) (Math.cos(Math.toRadians(currentTheta)) * distance);
 			this.addHistoryLine();
+			int i = commandHistory.length-1;
+			if (commandHistory[i].state == penStates.PENDOWN | commandHistory[i].state == penStates.PENFAT)
+			{
+				myParent.line(commandHistory[i].p0.x, commandHistory[i].p0.y, commandHistory[i].p1.x, commandHistory[i].p1.y);
+			}
 		}
 	}
 
@@ -216,59 +225,173 @@ public class Turtle {
 	 *            number of steps (maps to pixels) to move.
 	 */
 	private void forwardWrapAround(double distance) {
-		float x, y, nextX, nextY, finalX, finalY;
+		float x, y, nextX, nextY, nextX1, nextY1, d;
 		boolean flag = false;
 		int currentPenStateTemp = this.getPenState();
-
+		int i;
+		
+		//generate coordinates for entire line
 		x = currentX + (float) (Math.sin(Math.toRadians(currentTheta)) * distance);
+		y = currentY - (float) (Math.cos(Math.toRadians(currentTheta)) * distance);
 		nextX = x;
-		finalX = x;
-		if ((myParent.width - x) < 0 | (myParent.width - x) > myParent.width) {
-			flag = true;
-			// get x coordinates for edges of page
-			if (myParent.width - x < 0) {
-				currentX = myParent.width;
-				nextX = 0;
-			} else {
-				currentX = 0;
-				nextX = myParent.width;
-			}
-			// calculate new x
-			finalX = Math.abs(myParent.width - Math.abs(x));
-		} else
-			currentX = x;
-
-		y = currentY + (float) (Math.cos(Math.toRadians(currentTheta)) * distance);
 		nextY = y;
-		finalY = y;
-		if ((myParent.height - y) < 0 | (myParent.height - y) > myParent.height) {
-			flag = true;
-			// get y coordinates for edges of page
-			if (myParent.height - y < 0) {
-				currentY = myParent.height;
-				nextY = 0;
-			} else {
-				currentY = 0;
-				nextY = myParent.height;
+		nextX1 = x;
+		nextY1 = y;
+		d=0;
+		
+		//if line falls off
+		if ( ((myParent.width - x) < 0  | (myParent.width - x)  > myParent.width) |
+			 ((myParent.height - y) < 0 | (myParent.height - y) > myParent.height))
+		{
+			// get coordinates for edges of page
+			//falls off right edge
+			if (myParent.width - x < 0) {
+				nextY = currentY - (float) (1/Math.tan(Math.toRadians(currentTheta)) * (myParent.width -currentX));
+				//if line falls of y before x
+				if ((myParent.height - nextY) < 0 | (myParent.height - nextY) > myParent.height)
+				{
+					this.forwardWrapAroundY(distance);
+					return;
+				}
+				//falls off x first
+				else
+				{
+					nextX = myParent.width;
+					nextX1 = 0;
+					
+				}
+			} 
+			//falls off left edge
+			else if ((myParent.width - x)  > myParent.width) {
+				nextY = currentY + (float) (1/Math.tan(Math.toRadians(currentTheta)) * (currentX));
+				//if line falls of y before x
+				if ((myParent.height - nextY) < 0 | (myParent.height - nextY) > myParent.height)
+				{
+					this.forwardWrapAroundY(distance);
+					return;
+				}
+				//falls off x first
+				else
+				{
+					nextX = 0;
+					nextX1 = myParent.width;
+				}
 			}
-			// calculate new y
-			finalY = Math.abs(myParent.height - Math.abs(y));
-		} else
-			currentY = y;
-		if (flag) {
+			//falls off y only
+			else
+			{
+				this.forwardWrapAroundY(distance);
+				return;
+			}
+			//draw lines for forward steps to edge of page + wrap around & calculate next distance to travel
+			d = (float)Math.sqrt((nextX-currentX)*(nextX-currentX)+(nextY-currentY)*(nextY-currentY));
+			nextY1 = nextY;
 			// line to edge of page
-			this.addHistoryLine();
-			// jump to wrap-around edge, PENUP
-			this.currentPenState = penStates.PENUP;
 			currentX = nextX;
 			currentY = nextY;
 			this.addHistoryLine();
-			// line from wrap-around edge to final location
+			i = commandHistory.length-1;
+			if (commandHistory[i].state == penStates.PENDOWN | commandHistory[i].state == penStates.PENFAT)
+			{
+				myParent.line(commandHistory[i].p0.x, commandHistory[i].p0.y, commandHistory[i].p1.x, commandHistory[i].p1.y);
+			}
+			// jump to wrap-around edge, PENUP
+			this.currentPenState = penStates.PENUP;
+			currentX = nextX1;
+			currentY = nextY1;
+			this.addHistoryLine();
 			this.currentPenState = currentPenStateTemp;
-			currentX = finalX;
-			currentY = finalY;
+			
+			//continue moving next distance
+			if (Math.abs(d)<Math.abs(distance))
+			{
+				if (distance>0)
+					this.forwardWrapAround(distance-d);
+				else
+					this.forwardWrapAround(-(-distance-d));
+			}
+			else
+			{
+				myParent.println("error. distance to edge is larger than total distance: " +d);
+				myParent.println("nextXY: (" +nextX +", " +nextY +") nextXY1: (" +nextX1 +", " +nextY1 +")");
+			}
 		}
-		this.addHistoryLine();
+
+		//line doesn't fall off
+		else {
+			currentX = x;
+			currentY = y;
+			this.addHistoryLine();
+			i = commandHistory.length-1;
+			if (commandHistory[i].state == penStates.PENDOWN | commandHistory[i].state == penStates.PENFAT)
+			{
+				myParent.line(commandHistory[i].p0.x, commandHistory[i].p0.y, commandHistory[i].p1.x, commandHistory[i].p1.y);
+			}
+		}
+		
+	}
+
+	private void forwardWrapAroundY (double distance) {
+		float x, y, nextX, nextY, nextX1, nextY1, d;
+		boolean flag = false;
+		int currentPenStateTemp = this.getPenState();
+		int i;
+		
+		//generate coordinates for entire line
+		x = currentX + (float) (Math.sin(Math.toRadians(currentTheta)) * distance);
+		y = currentY - (float) (Math.cos(Math.toRadians(currentTheta)) * distance);
+		nextX = x;
+		nextY = y;
+		nextX1 = x;
+		nextY1 = y;
+		
+		if ((myParent.height - y) < 0 | (myParent.height - y) > myParent.height) {
+			flag = true;
+			// get coordinates for edges of page
+			if (myParent.height - y < 0) {
+				nextX = currentX - (float) (Math.tan(Math.toRadians(currentTheta)) * (myParent.height -currentY));
+				nextY = myParent.height;
+				nextY1 = 0;
+			} else {
+				nextX = currentX + (float) (Math.tan(Math.toRadians(currentTheta)) * (currentY));
+				nextY = 0;
+				nextY1 = myParent.height;
+			}
+			nextX1 = nextX;
+
+			d = (float)Math.sqrt((nextX-currentX)*(nextX-currentX)+(nextY-currentY)*(nextY-currentY));
+			// line to edge of page
+			currentX = nextX;
+			currentY = nextY;
+			this.addHistoryLine();
+			i = commandHistory.length-1;
+			if (commandHistory[i].state == penStates.PENDOWN | commandHistory[i].state == penStates.PENFAT)
+			{
+				myParent.line(commandHistory[i].p0.x, commandHistory[i].p0.y, commandHistory[i].p1.x, commandHistory[i].p1.y);
+			}
+			// jump to wrap-around edge, PENUP
+			this.currentPenState = penStates.PENUP;
+			currentX = nextX1;
+			currentY = nextY1;
+			this.addHistoryLine();
+			this.currentPenState = currentPenStateTemp;
+
+			if (Math.abs(d)<Math.abs(distance))
+			{
+				if (distance>0)
+					this.forwardWrapAround(distance-d);
+				else
+					this.forwardWrapAround(-(-distance-d));
+			}
+			else
+			{
+				myParent.println("error in forwardWrapAroundY. distance to edge is larger than total distance. d: " +d);
+				myParent.println("nextXY: (" +nextX +", " +nextY +") nextXY1: (" +nextX1 +", " +nextY1 +")");
+			}
+		}
+		else {
+			myParent.println("Error. Shouldn't ever get here.");
+		}
 	}
 
 	/**
@@ -512,11 +635,13 @@ public class Turtle {
 	 * called automatically by Processing.
 	 */
 	public void draw() {
+		/*
 		int numLines = this.commandHistory.length;
 		for (int i = 0; i < numLines; i++) {
 			if (this.commandHistory[i].state == penStates.PENDOWN)
 				this.commandHistory[i].draw();
 		}
+		*/
 	}
 
 	private tLine[] concat(tLine[] array1, tLine[] array2) {
@@ -570,6 +695,7 @@ public class Turtle {
 		}
 		System.out.println("");
 	}
+	
 
 	/**
 	 * Delete the Turtle's previous history and clear all previous drawing.
@@ -587,15 +713,13 @@ public class Turtle {
 	public void drawTurtle() {
 		float x1, y1, x2, y2, x3, y3;
 		x1 = currentX + (float) (Math.sin(Math.toRadians(currentTheta - 90)) * 5);
-		y1 = currentY + (float) (Math.cos(Math.toRadians(currentTheta - 90)) * 5);
+		y1 = currentY - (float) (Math.cos(Math.toRadians(currentTheta - 90)) * 5);
 		x2 = currentX + (float) (Math.sin(Math.toRadians(currentTheta)) * 10);
-		y2 = currentY + (float) (Math.cos(Math.toRadians(currentTheta)) * 10);
+		y2 = currentY - (float) (Math.cos(Math.toRadians(currentTheta)) * 10);
 		x3 = currentX + (float) (Math.sin(Math.toRadians(currentTheta + 90)) * 5);
-		y3 = currentY + (float) (Math.cos(Math.toRadians(currentTheta + 90)) * 5);
+		y3 = currentY - (float) (Math.cos(Math.toRadians(currentTheta + 90)) * 5);
 
-		myParent.fill(0, 100, 200);
-		myParent.triangle(x1, (myParent.height - y1), x2, (myParent.height - y2), x3, (myParent.height - y3));
-		myParent.noFill();
+		myParent.triangle(x1, y1, x2, y2, x3, y3);
 	}
 
 	private void welcome() {
